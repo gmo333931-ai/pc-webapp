@@ -4,20 +4,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>KAZAH TEAMS CONTROL</title>
+  <title>KAZAH CYBER DECK</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&family=Space+Grotesk:wght@500;700;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #090c10;
-      --card-bg: #161b22;
-      --card-border: #30363d;
-      --accent: #58a6ff;
-      --accent-glow: rgba(88, 166, 255, 0.25);
-      --danger: #f85149;
-      --success: #3fb950;
-      --text: #f0f6fc;
-      --text-muted: #8b949e;
+      --bg: #070709;
+      --card-bg: rgba(18, 18, 22, 0.75);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --card-border-hover: rgba(255, 255, 255, 0.22);
+      --accent: #e6e6ea;
+      --accent-glow: rgba(255, 255, 255, 0.15);
+      --highlight: #00f0ff;
+      --highlight-glow: rgba(0, 240, 255, 0.35);
+      --danger: #ff3344;
+      --danger-glow: rgba(255, 51, 68, 0.35);
+      --purple: #b026ff;
+      --purple-glow: rgba(176, 38, 255, 0.35);
+      --text: #f4f4f6;
+      --text-muted: #71717a;
     }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -25,242 +34,422 @@
       -webkit-tap-highlight-color: transparent;
       user-select: none;
     }
+
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: 'Space Grotesk', -apple-system, sans-serif;
       padding: 14px;
-      padding-bottom: 90px;
+      padding-bottom: 95px;
       overflow-x: hidden;
+      min-height: 100vh;
+      position: relative;
     }
+
+    /* Subtle ambient dark glow */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 450px;
+      height: 300px;
+      background: radial-gradient(ellipse, rgba(255, 255, 255, 0.04) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Ambient animated grid lines */
+    .cyber-bg-grid {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+      background-size: 32px 32px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Header */
     .header {
-      background: linear-gradient(135deg, #1f2937, #111827);
+      background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 16px;
-      margin-bottom: 16px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      border-radius: 20px;
+      padding: 18px;
+      margin-bottom: 14px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       display: flex;
       align-items: center;
       justify-content: space-between;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      position: relative;
+      overflow: hidden;
     }
+
+    .header::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+    }
+
     .header-info h1 {
-      font-size: 18px;
-      font-weight: 800;
-      letter-spacing: 0.5px;
+      font-size: 19px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
       color: #fff;
       display: flex;
       align-items: center;
       gap: 8px;
+      text-transform: uppercase;
     }
+
+    .header-info h1 span {
+      background: linear-gradient(135deg, #fff 30%, #71717a);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
     .header-info p {
-      font-size: 12px;
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
       color: var(--text-muted);
       margin-top: 4px;
+      letter-spacing: 0.3px;
     }
-    .status-badge {
+
+    .badge-status {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      background: rgba(63, 185, 80, 0.15);
-      border: 1px solid var(--success);
-      padding: 4px 10px;
-      border-radius: 20px;
+      gap: 7px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 6px 12px;
+      border-radius: 30px;
       font-size: 11px;
-      font-weight: 600;
-      color: var(--success);
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      color: #fff;
     }
-    .status-dot {
-      width: 7px;
-      height: 7px;
-      background: var(--success);
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      background: #00ff88;
       border-radius: 50%;
-      box-shadow: 0 0 8px var(--success);
-      animation: pulse 1.8s infinite;
+      box-shadow: 0 0 10px #00ff88;
+      animation: pulseDot 2s infinite;
     }
-    @keyframes pulse {
+
+    @keyframes pulseDot {
       0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(0.85); }
+      50% { opacity: 0.3; transform: scale(0.8); }
     }
+
+    /* Search bar */
     .search-box {
-      margin-bottom: 14px;
+      margin-bottom: 12px;
       position: relative;
     }
+
     .search-input {
       width: 100%;
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      color: var(--text);
-      padding: 12px 16px;
-      border-radius: 12px;
-      font-size: 14px;
+      color: #fff;
+      padding: 13px 18px;
+      padding-left: 42px;
+      border-radius: 14px;
+      font-size: 13px;
+      font-family: 'Space Grotesk', sans-serif;
       outline: none;
-      transition: all 0.2s;
+      backdrop-filter: blur(16px);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
+
+    .search-input::placeholder {
+      color: var(--text-muted);
+    }
+
     .search-input:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-glow);
+      border-color: rgba(255, 255, 255, 0.35);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.06);
     }
-    .tabs {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding-bottom: 8px;
+
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 15px;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    /* Category Tabs */
+    .tabs-wrapper {
       margin-bottom: 14px;
+      overflow-x: auto;
       scrollbar-width: none;
     }
-    .tabs::-webkit-scrollbar { display: none; }
+    .tabs-wrapper::-webkit-scrollbar { display: none; }
+
+    .tabs {
+      display: flex;
+      gap: 7px;
+      padding-bottom: 4px;
+    }
+
     .tab-btn {
       flex: 0 0 auto;
-      background: var(--card-bg);
+      background: rgba(255, 255, 255, 0.03);
       border: 1px solid var(--card-border);
       color: var(--text-muted);
-      padding: 8px 14px;
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: 30px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      backdrop-filter: blur(10px);
     }
+
     .tab-btn.active {
-      background: var(--accent);
-      color: #000;
-      border-color: var(--accent);
-      box-shadow: 0 2px 10px var(--accent-glow);
+      background: #ffffff;
+      color: #000000;
+      border-color: #ffffff;
+      box-shadow: 0 4px 18px rgba(255, 255, 255, 0.25);
     }
+
+    /* Cards Grid */
     .cmd-grid {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
     }
+
     .cmd-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 14px;
-      padding: 14px;
+      border-radius: 16px;
+      padding: 15px;
       display: flex;
       flex-direction: column;
       gap: 10px;
-      transition: transform 0.15s, border-color 0.2s;
+      backdrop-filter: blur(16px);
       position: relative;
       overflow: hidden;
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
     }
+
     .cmd-card:active {
       transform: scale(0.985);
+      border-color: var(--card-border-hover);
     }
-    .cmd-header {
+
+    .card-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 10px;
     }
-    .cmd-title {
-      font-size: 15px;
-      font-weight: 700;
+
+    .cmd-name {
+      font-size: 14px;
+      font-weight: 800;
       color: #fff;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
     }
-    .cmd-code {
+
+    .cmd-tag {
+      font-family: 'JetBrains Mono', monospace;
       font-size: 11px;
-      font-family: monospace;
-      color: var(--accent);
-      background: rgba(88, 166, 255, 0.1);
+      font-weight: 600;
+      color: #a1a1aa;
+      background: rgba(255, 255, 255, 0.06);
       padding: 3px 8px;
       border-radius: 6px;
-      border: 1px solid rgba(88, 166, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.08);
     }
+
     .cmd-desc {
       font-size: 12px;
       color: var(--text-muted);
-      line-height: 1.4;
+      line-height: 1.45;
     }
+
+    /* Action Buttons */
     .exec-btn {
       width: 100%;
-      background: linear-gradient(135deg, #238636, #2ea043);
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      padding: 10px 14px;
-      font-size: 13px;
-      font-weight: 700;
+      background: linear-gradient(180deg, #27272a 0%, #18181b 100%);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+      padding: 11px 14px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      box-shadow: 0 3px 12px rgba(46, 160, 67, 0.3);
-      transition: all 0.15s;
+      gap: 7px;
+      text-transform: uppercase;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
+
+    .exec-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+      transition: all 0.5s ease;
+    }
+
+    .exec-btn:active::before {
+      left: 100%;
+    }
+
     .exec-btn:active {
-      transform: scale(0.97);
-      background: #238636;
+      transform: scale(0.975);
+      background: #18181b;
+      border-color: rgba(255, 255, 255, 0.25);
     }
+
+    /* Danger action button (Red neon accent) */
     .exec-btn.danger {
-      background: linear-gradient(135deg, #da3633, #f85149);
-      box-shadow: 0 3px 12px rgba(248, 81, 73, 0.3);
+      background: linear-gradient(180deg, rgba(255, 51, 68, 0.18) 0%, rgba(20, 10, 12, 0.9) 100%);
+      border: 1px solid rgba(255, 51, 68, 0.35);
+      color: #ff6b77;
     }
+    .exec-btn.danger:active {
+      box-shadow: 0 0 18px var(--danger-glow);
+      border-color: var(--danger);
+    }
+
+    /* Cyber Cyan button */
+    .exec-btn.cyan {
+      background: linear-gradient(180deg, rgba(0, 240, 255, 0.14) 0%, rgba(10, 20, 24, 0.9) 100%);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      color: #67e8f9;
+    }
+    .exec-btn.cyan:active {
+      box-shadow: 0 0 18px var(--highlight-glow);
+      border-color: var(--highlight);
+    }
+
+    /* Purple Prank button */
     .exec-btn.prank {
-      background: linear-gradient(135deg, #8957e5, #a371f7);
-      box-shadow: 0 3px 12px rgba(163, 113, 247, 0.3);
+      background: linear-gradient(180deg, rgba(176, 38, 255, 0.16) 0%, rgba(20, 10, 26, 0.9) 100%);
+      border: 1px solid rgba(176, 38, 255, 0.35);
+      color: #d8b4fe;
     }
+    .exec-btn.prank:active {
+      box-shadow: 0 0 18px var(--purple-glow);
+      border-color: var(--purple);
+    }
+
+    /* Toast Notification */
     .toast {
       position: fixed;
       bottom: 24px;
       left: 50%;
-      transform: translateX(-50%) translateY(100px);
-      background: rgba(22, 27, 34, 0.95);
-      border: 1px solid var(--accent);
+      transform: translateX(-50%) translateY(120px);
+      background: rgba(18, 18, 22, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       color: #fff;
-      padding: 12px 20px;
-      border-radius: 25px;
+      padding: 12px 22px;
+      border-radius: 40px;
       font-size: 13px;
-      font-weight: 600;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      font-weight: 700;
+      letter-spacing: 0.3px;
       display: flex;
       align-items: center;
-      gap: 8px;
-      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      gap: 10px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 255, 255, 0.08);
       z-index: 9999;
       pointer-events: none;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     }
+
     .toast.show {
       transform: translateX(-50%) translateY(0);
+    }
+
+    .toast-dot {
+      width: 8px;
+      height: 8px;
+      background: #00ff88;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #00ff88;
     }
   </style>
 </head>
 <body>
+  <div class="cyber-bg-grid"></div>
 
-  <div class="header">
-    <div class="header-info">
-      <h1>🐺 Kazah Teams PC</h1>
-      <p id="pc-status">ПК в сети • Ожидание команд</p>
+  <div class="container">
+    <div class="header">
+      <div class="header-info">
+        <h1><span>KAZAH</span> CONTROL</h1>
+        <p>SYSTEM-26.2 // CYBER DECK</p>
+      </div>
+      <div class="badge-status">
+        <span class="badge-dot"></span>
+        <span>PC ONLINE</span>
+      </div>
     </div>
-    <div class="status-badge">
-      <span class="status-dot"></span>
-      <span>ONLINE</span>
+
+    <div class="search-box">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="searchInput" class="search-input" placeholder="Поиск функции или хоткея..." oninput="filterCards()">
     </div>
-  </div>
 
-  <div class="search-box">
-    <input type="text" id="searchInput" class="search-input" placeholder="🔍 Поиск команды или действия..." oninput="filterCards()">
-  </div>
+    <div class="tabs-wrapper">
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchCategory('all', this)">Все команды (40)</button>
+        <button class="tab-btn" onclick="switchCategory('keys', this)">⌨️ Клавиши</button>
+        <button class="tab-btn" onclick="switchCategory('sys', this)">⚡️ Система</button>
+        <button class="tab-btn" onclick="switchCategory('media', this)">📸 Медиа</button>
+        <button class="tab-btn" onclick="switchCategory('prank', this)">👻 Пранки</button>
+        <button class="tab-btn" onclick="switchCategory('procs', this)">⚙️ Процессы</button>
+        <button class="tab-btn" onclick="switchCategory('net', this)">📶 Сеть</button>
+      </div>
+    </div>
 
-  <div class="tabs">
-    <button class="tab-btn active" onclick="switchCategory('all', this)">⚡️ Все (42)</button>
-    <button class="tab-btn" onclick="switchCategory('keys', this)">⌨️ Клавиши</button>
-    <button class="tab-btn" onclick="switchCategory('sys', this)">📊 Система</button>
-    <button class="tab-btn" onclick="switchCategory('media', this)">📸 Медиа</button>
-    <button class="tab-btn" onclick="switchCategory('prank', this)">👻 Пранки</button>
-    <button class="tab-btn" onclick="switchCategory('procs', this)">⚙️ Софт</button>
-    <button class="tab-btn" onclick="switchCategory('net', this)">📶 Сеть</button>
+    <div class="cmd-grid" id="cmdGrid"></div>
   </div>
-
-  <div class="cmd-grid" id="cmdGrid"></div>
 
   <div class="toast" id="toast">
-    <span>⚡️</span>
-    <span id="toastText">Команда отправлена</span>
+    <span class="toast-dot"></span>
+    <span id="toastText">Команда выполнена</span>
   </div>
 
   <script>
@@ -268,55 +457,58 @@
     if (tg) {
       tg.ready();
       tg.expand();
-      tg.setHeaderColor('#090c10');
-      tg.setBackgroundColor('#090c10');
+      tg.setHeaderColor('#070709');
+      tg.setBackgroundColor('#070709');
     }
 
     const commands = [
-      // Горячие клавиши
-      { name: "Alt + F4 (Закрыть)", cmd: "alt+f4", cat: "keys", desc: "Мгновенно закрывает активное окно на рабочем столе Windows.", type: "danger" },
-      { name: "Ctrl + W (Закрыть вкладку)", cmd: "ctrl+w", cat: "keys", desc: "Закрывает текущую вкладку в браузере или проводнике.", type: "normal" },
-      { name: "Alt + Tab (Сменить окно)", cmd: "alt+tab", cat: "keys", desc: "Переключает фокус на следующее открытое приложение.", type: "normal" },
-      { name: "Win + D (Свернуть всё)", cmd: "win+d", cat: "keys", desc: "Моментально скрывает все окна и показывает чистый рабочий стол.", type: "normal" },
-      { name: "Ctrl + Shift + Esc", cmd: "ctrl+shift+esc", cat: "keys", desc: "Открывает системный Диспетчер задач Windows.", type: "normal" },
-      { name: "F11 (Полный экран)", cmd: "f11", cat: "keys", desc: "Разворачивает окно игры или браузера на весь экран.", type: "normal" },
-      { name: "F5 (Обновить)", cmd: "f5", cat: "keys", desc: "Обновляет страницу в браузере или папку проводника.", type: "normal" },
-      { name: "Space (Пауза / Плей)", cmd: "space", cat: "keys", desc: "Ставит на паузу или запускает видео/музыку на ПК.", type: "normal" },
+      // Клавиши
+      { name: "Alt + F4 (Закрыть)", cmd: "alt+f4", cat: "keys", desc: "Убивает активное окно рабочего стола Windows.", type: "danger" },
+      { name: "Ctrl + W (Закрыть вкладку)", cmd: "ctrl+w", cat: "keys", desc: "Закрывает активную вкладку в браузере или проводнике.", type: "normal" },
+      { name: "Alt + Tab (Сменить окно)", cmd: "alt+tab", cat: "keys", desc: "Переключает фокус на следующее запущенное приложение.", type: "normal" },
+      { name: "Win + D (Свернуть всё)", cmd: "win+d", cat: "keys", desc: "Моментально очищает экран и сворачивает все открытые окна.", type: "cyan" },
+      { name: "Ctrl + Shift + Esc", cmd: "ctrl+shift+esc", cat: "keys", desc: "Вызывает системный Диспетчер задач Windows.", type: "normal" },
+      { name: "F11 (Полноэкранный)", cmd: "f11", cat: "keys", desc: "Разворачивает окно приложения или браузера в Fullscreen.", type: "cyan" },
+      { name: "F5 (Обновить)", cmd: "f5", cat: "keys", desc: "Обновляет текущую страницу или папку в системе.", type: "normal" },
+      { name: "Space (Пауза / Плей)", cmd: "space", cat: "keys", desc: "Ставит на паузу или продолжает воспроизведение видео/звука.", type: "normal" },
 
-      // Система
-      { name: "Скриншот экрана", cmd: "/screen", cat: "media", desc: "Делает моментальный снимок экрана монитора и шлёт в чат.", type: "normal" },
-      { name: "Запись экрана (GIF)", cmd: "/record 5", cat: "media", desc: "Записывает 5-секундную живую GIF-анимацию происходящего на мониторе.", type: "normal" },
-      { name: "Микрофон (10 сек)", cmd: "/mic", cat: "media", desc: "Записывает звук из комнаты через микрофон ПК и шлёт голосовым.", type: "normal" },
-      { name: "История Chrome", cmd: "/history", cat: "media", desc: "Вытаскивает последние 15 посещённых сайтов из браузера Chrome.", type: "normal" },
+      // Медиа и камера
+      { name: "Скриншот экрана", cmd: "/screen", cat: "media", desc: "Моментальный снимок экрана ПК с отправкой прямо в чат Telegram.", type: "cyan" },
+      { name: "GIF-запись монитора (5с)", cmd: "/record 5", cat: "media", desc: "Записывает 5 секунд живого видео происходящего на рабочем столе.", type: "cyan" },
+      { name: "Прослушка микрофона (10с)", cmd: "/mic", cat: "media", desc: "Записывает звук вокруг ПК и шлёт голосовым сообщением.", type: "normal" },
+      { name: "История браузера Chrome", cmd: "/history", cat: "media", desc: "Считывает последние 15 посещённых сайтов из Chrome.", type: "normal" },
 
-      // Пранки
-      { name: "😱 Скример на 100% громкости", cmd: "/scare", cat: "prank", desc: "Выкручивает звук ПК на максимум, орёт сирена и выскакивает скример.", type: "prank" },
-      { name: "CS2 Flashbang (Слеповая)", cmd: "/flash", cat: "prank", desc: "Ослепляющая белая вспышка на весь монитор со звоном в ушах из CS2.", type: "prank" },
-      { name: "Синий экран (BSOD)", cmd: "/bsod", cat: "prank", desc: "Реалистичный экран критической ошибки Windows 11 на весь экран.", type: "prank" },
-      { name: "Землетрясение окон", cmd: "/shake", cat: "prank", desc: "Бешено трясёт активное окно по всему монитору 5 секунд.", type: "prank" },
-      { name: "Эффект Матрицы", cmd: "/matrix", cat: "prank", desc: "Зелёный падающий код в стиле Матрицы на полный экран.", type: "prank" },
-      { name: "«Отойдите от ПК!» (Голос)", cmd: "/say Внимание! Немедленно отойдите от компьютера!", cat: "prank", desc: "Озвучивает грозную фразу роботизированным голосом через динамики.", type: "prank" },
-      { name: "Фейк Обновление Windows", cmd: "/fakeupdate", cat: "prank", desc: "Фейковый бесконечный экран обновления Windows 11 (0%..99%).", type: "prank" },
-      { name: "Системный BEEP", cmd: "/beep", cat: "prank", desc: "Громкий писк аппаратного спикера материнской платы.", type: "prank" },
+      // Пранки и скримеры
+      { name: "😱 Скример на 100% звука", cmd: "/scare", cat: "prank", desc: "Выкручивает громкость динамиков в потолок и взрывает скример.", type: "prank" },
+      { name: "CS2 Flashbang (Ослепление)", cmd: "/flash", cat: "prank", desc: "Белая слеповая вспышка на весь монитор со звоном из контры.", type: "prank" },
+      { name: "Синий экран (BSOD Win 11)", cmd: "/bsod", cat: "prank", desc: "Реалистичный экран критической ошибки Windows на весь экран.", type: "prank" },
+      { name: "Землетрясение окон (Shake)", cmd: "/shake", cat: "prank", desc: "Бешено трясёт активное окно по экрану в течение 5 секунд.", type: "prank" },
+      { name: "Матрица на мониторе", cmd: "/matrix", cat: "prank", desc: "Зелёный кибер-дождь падающих символов на весь монитор.", type: "prank" },
+      { name: "«Отойди от ПК!» (Голос)", cmd: "/say Внимание! Немедленно отойдите от компьютера!", cat: "prank", desc: "Синтезирует грозный металлический голос через динамики ПК.", type: "prank" },
+      { name: "Фейк Обновление Windows", cmd: "/fakeupdate", cat: "prank", desc: "Бесконечный экран симуляции обновления Windows 11.", type: "prank" },
+      { name: "Аппаратный Beep", cmd: "/beep", cat: "prank", desc: "Громкий писк материнской платы спикером ПК.", type: "prank" },
 
-      // Окна & Софт
-      { name: "Очистить ОЗУ (RAM Boost)", cmd: "/boost", cat: "sys", desc: "Сбрасывает WorkingSet всех процессов и чистит оперативку до 2 ГБ.", type: "normal" },
-      { name: "Список открытых окон", cmd: "/windows", cat: "procs", desc: "Показывает список всех видимых окон с кнопками закрытия.", type: "normal" },
-      { name: "Закрыть процесс .exe", cmd: "/killmenu", cat: "procs", desc: "Интерактивное меню для завершения любой запущенной программы.", type: "danger" },
-      { name: "Все запущенные .exe", cmd: "/apps", cat: "procs", desc: "Полный список всех процессов Windows, отсортированный по памяти.", type: "normal" },
-      { name: "Разбудить монитор", cmd: "/wake", cat: "sys", desc: "Имитирует шевеление мыши и клик, чтобы вывести экран из сна.", type: "normal" },
+      // Система и производительность
+      { name: "⚡️ Очистить ОЗУ (RAM Boost)", cmd: "/boost", cat: "sys", desc: "Сбрасывает WorkingSet всех процессов и освобождает до 2-3 ГБ ОЗУ.", type: "cyan" },
+      { name: "Статус системы (CPU / RAM)", cmd: "/status", cat: "sys", desc: "Выводит датчики загрузки процессора, оперативной памяти и аптайма.", type: "normal" },
+      { name: "Разбудить монитор", cmd: "/wake", cat: "sys", desc: "Имитирует движение мыши и клик, моментально включая дисплей.", type: "cyan" },
+      { name: "Очистить корзину", cmd: "/emptybin", cat: "sys", desc: "Безвозвратно удаляет все временные файлы из корзины Windows.", type: "normal" },
+      { name: "Звук +10%", cmd: "/volup", cat: "sys", desc: "Увеличивает громкость звука Windows на 10%.", type: "normal" },
+      { name: "Звук -10%", cmd: "/voldown", cat: "sys", desc: "Уменьшает громкость звука Windows на 10%.", type: "normal" },
+      { name: "Заглушить звук (Mute)", cmd: "/mute", cat: "sys", desc: "Полностью выключает системный звук в Windows.", type: "normal" },
+      { name: "Заблокировать ПК (Lock)", cmd: "/lock", cat: "sys", desc: "Блокирует компьютер (Win+L) и возвращает на экран пароля.", type: "danger" },
+      { name: "Спящий режим (Sleep)", cmd: "/sleep", cat: "sys", desc: "Переводит компьютер в глубокий спящий режим.", type: "danger" },
+      { name: "Выключить ПК (Power Off)", cmd: "/off", cat: "sys", desc: "Экстренно выключает питание компьютера.", type: "danger" },
 
-      // Сеть и звук
-      { name: "Пароли от всех Wi-Fi", cmd: "/wifi", cat: "net", desc: "Считывает имена и открытые пароли всех сохранённых Wi-Fi сетей.", type: "normal" },
-      { name: "Прочитать буфер обмена", cmd: "/clip", cat: "net", desc: "Присылает текст, который сейчас скопирован в буфер Windows (Ctrl+C).", type: "normal" },
-      { name: "Звук +10%", cmd: "/volup", cat: "sys", desc: "Прибавляет системную громкость на 10%.", type: "normal" },
-      { name: "Звук -10%", cmd: "/voldown", cat: "sys", desc: "Убавляет системную громкость на 10%.", type: "normal" },
-      { name: "Mute / Unmute", cmd: "/mute", cat: "sys", desc: "Полностью глушит или включает системный звук.", type: "normal" },
-      { name: "YouTube Phonk", cmd: "/yt phonk", cat: "media", desc: "Открывает в браузере YouTube с фоновым фонком на полную.", type: "normal" },
-      { name: "Очистить корзину", cmd: "/emptybin", cat: "sys", desc: "Безвозвратно очищает корзину Windows со звуком комкания бумаги.", type: "normal" },
-      { name: "Заблокировать ПК (Lock)", cmd: "/lock", cat: "sys", desc: "Блокирует экран Windows и выводит экран ввода пароля.", type: "danger" },
-      { name: "Спящий режим (Sleep)", cmd: "/sleep", cat: "sys", desc: "Переводит компьютер в глубокий спящий энергосберегающий режим.", type: "danger" },
-      { name: "Выключить ПК (Power Off)", cmd: "/off", cat: "sys", desc: "Экстренно выключает компьютер.", type: "danger" }
+      // Процессы и софт
+      { name: "Список открытых окон", cmd: "/windows", cat: "procs", desc: "Выводит список всех активных окон с кнопками закрытия каждого.", type: "normal" },
+      { name: "Закрыть процесс .exe", cmd: "/killmenu", cat: "procs", desc: "Интерактивное меню для мгновенного закрытия любой программы.", type: "danger" },
+      { name: "Список всех процессов", cmd: "/apps", cat: "procs", desc: "Полный перечень всех запущенных .exe файлов в оперативной памяти.", type: "normal" },
+      { name: "YouTube Phonk", cmd: "/yt phonk", cat: "media", desc: "Открывает в браузере фоновый фонк-стрим на максимальной громкости.", type: "cyan" },
+
+      // Сеть и буфер
+      { name: "Пароли всех Wi-Fi сетей", cmd: "/wifi", cat: "net", desc: "Считывает имена сетей и все открытые сохранённые пароли Wi-Fi.", type: "cyan" },
+      { name: "Буфер обмена Windows", cmd: "/clip", cat: "net", desc: "Присылает то, что скопировано в буфере обмена (Ctrl+C).", type: "normal" }
     ];
 
     let currentCategory = "all";
@@ -330,12 +522,13 @@
         
         let btnClass = "exec-btn";
         if (c.type === "danger") btnClass += " danger";
-        if (c.type === "prank") btnClass += " prank";
+        else if (c.type === "cyan") btnClass += " cyan";
+        else if (c.type === "prank") btnClass += " prank";
 
         card.innerHTML = `
-          <div class="cmd-header">
-            <span class="cmd-title">${c.name}</span>
-            <span class="cmd-code">${c.cmd}</span>
+          <div class="card-top">
+            <span class="cmd-name">${c.name}</span>
+            <span class="cmd-tag">${c.cmd}</span>
           </div>
           <div class="cmd-desc">${c.desc}</div>
           <button class="${btnClass}" onclick="executeCommand('${c.cmd}')">
@@ -367,22 +560,17 @@
       const toast = document.getElementById("toast");
       document.getElementById("toastText").innerText = text;
       toast.classList.add("show");
-      setTimeout(() => toast.classList.remove("show"), 2200);
+      setTimeout(() => toast.classList.remove("show"), 2000);
     }
 
     function executeCommand(cmd) {
       if (tg) {
-        tg.HapticFeedback.impactOccurred('medium');
-        // Sends direct text data back to Telegram bot
-        tg.sendData(cmd);
+        try {
+          tg.HapticFeedback.impactOccurred('medium');
+          tg.sendData(cmd);
+        } catch(e) {}
       }
-      showToast("Выполняю: " + cmd);
-      // Fallback: send via fetch to local bot endpoint
-      fetch('/api/exec', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cmd: cmd })
-      }).catch(() => {});
+      showToast("Команда отправлена: " + cmd);
     }
 
     renderCards(commands);
